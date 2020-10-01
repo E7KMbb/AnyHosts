@@ -100,13 +100,11 @@ if [ $Now = $New ]; then
    rm -rf $work_dir/hosts
    echo "Not update: $curdate" >> $work_dir/update.log
 else
-   mount -o remount,rw /
    mv -f $work_dir/hosts $hosts_dir/hosts
    chmod 644 $hosts_dir/hosts
    chown 0:0 $hosts_dir/hosts
    chcon u:object_r:system_file:s0 $hosts_dir/hosts
-   mount -o remount,ro /
    echo -n "Last update time: $curdate" >> $work_dir/update.log
-   echo "hosts dir:$hosts_dir/hosts" >> $work_dir/update.log
+   echo " hosts dir:$hosts_dir/hosts" >> $work_dir/update.log
    sed -i '1d' $work_dir/update.log
 fi
