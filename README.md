@@ -12,7 +12,7 @@ You can download the release installer zip file and install it via the Magisk Ma
 
 * Fill in the subscription address you use in `/sdcard/AnyHosts/hosts_link` after installation.
 
-* Open Systemless Hosts in Magisk Manager settings.
+* Open `Systemless Hosts` in Magisk Manager settings.
 
 * Your subscription will be updated after every reboot.
 

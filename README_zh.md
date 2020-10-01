@@ -10,7 +10,7 @@
 
 * 安装后在 `/sdcard/AnyHosts/hosts_link` 内填写订阅地址。
 
-* 在Magisk Manager设置中打开Systemless Hosts。
+* 在Magisk Manager设置中打开 `Systemless Hosts`。
 
 * 您的订阅将在每次重启后更新。
 
