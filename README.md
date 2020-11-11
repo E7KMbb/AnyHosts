@@ -10,11 +10,37 @@ You can download the release installer zip file and install it via the Magisk Ma
 
 ## Usage
 
-* Fill in the subscription address you use in `/sdcard/AnyHosts/hosts_link` after installation.
+* Please fill in the subscription address after installation.
 
 * Open `Systemless Hosts` in Magisk Manager settings.
 
 * Your subscription will be updated after every reboot.
+
+## hosts_link
+
+* Fill in your subscription address in `/sdcard/AnyHosts/hosts_link`
+
+### * Fill in rules is each link should separate by space or just one link per line.
+
+## user_rules
+
+* Fill your own rules in `/sdcard/AnyHosts/user_rules`
+
+### * Fill in rules is one rule per line.
+
+## black_list
+
+* Fill your own rules in `/sdcard/AnyHosts/black_list`
+
+* Fill in rules.
+
+* Fill in the `IP` will block all this `IP`. (Fill in `127.0.0.1` to block all this `IP`)
+
+* Fill in the `DomainName` block all and this `DomainName` related entry. (Fill in the `google` to block all rules that contain this field)
+
+* Fill in the `IP`+`DomainName` please use `=` instead of space. (Block `127.0.0.1 www.google.com` please fill in the `127.0.0.1=www.google.com` )
+
+### * Fill in rules is each rule should separate by space or just one rule per line.
 
 ## Uninstall
 

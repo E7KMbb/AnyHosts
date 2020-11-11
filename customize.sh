@@ -54,6 +54,7 @@
 # If you need even more customization and prefer to do everything on your own, declare SKIPUNZIP=1 in customize.sh to skip the extraction and applying default permissions/secontext steps.
 # Be aware that by doing so, your customize.sh will then be responsible to install everything by itself.
 SKIPUNZIP=1
+ASH_STANDALONE=1
 
 ##########################################################################################
 # Replace list
@@ -96,10 +97,16 @@ fi
 if [ ! -e $work_dir/Start.sh ];then
    touch $work_dir/Start.sh
    echo "# Please execute under su authority" >> $work_dir/Start.sh
-   echo "sh /data/adb/modules/AnyHosts/service.sh" >> $work_dir/Start.sh
+   echo "sh /data/adb/modules/AnyHosts/script/functions.shh" >> $work_dir/Start.sh
 fi
 if [ ! -e $work_dir/hosts_link ];then
    touch $work_dir/hosts_link
+fi
+if [ ! -e $work_dir/user_rules ];then
+   touch $work_dir/user_rules
+fi
+if [ ! -e $work_dir/black_list ];then
+   touch $work_dir/black_list
 fi
 
 # Delete extra files
