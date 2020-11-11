@@ -20,13 +20,13 @@ You can download the release installer zip file and install it via the Magisk Ma
 
 * Fill in your subscription address in `/sdcard/AnyHosts/hosts_link`
 
-### * Fill in rules is each link should separate by space or just one link per line.
+### • Fill in rules is each link should separate by space or just one link per line.
 
 ## user_rules
 
 * Fill your own rules in `/sdcard/AnyHosts/user_rules`
 
-### * Fill in rules is one rule per line.
+### • Fill in rules is one rule per line.
 
 ## black_list
 
@@ -40,8 +40,11 @@ You can download the release installer zip file and install it via the Magisk Ma
 
 * Fill in the `IP`+`DomainName` please use `=` instead of space. (Block `127.0.0.1 www.google.com` please fill in the `127.0.0.1=www.google.com` )
 
-### * Fill in rules is each rule should separate by space or just one rule per line.
+### • Fill in rules is each rule should separate by space or just one rule per line.
 
 ## Uninstall
 
 * Uninstall the module via Magisk Manager App.
+
+### Links
+* [GitHub](https://github.com/E7KMbb/AnyHosts)
