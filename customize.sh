@@ -97,7 +97,7 @@ fi
 if [ ! -e $work_dir/Start.sh ];then
    touch $work_dir/Start.sh
    echo "# Please execute under su authority" >> $work_dir/Start.sh
-   echo "sh /data/adb/modules/AnyHosts/script/functions.shh" >> $work_dir/Start.sh
+   echo "sh /data/adb/modules/AnyHosts/script/functions.sh" >> $work_dir/Start.sh
 fi
 if [ ! -e $work_dir/hosts_link ];then
    touch $work_dir/hosts_link
