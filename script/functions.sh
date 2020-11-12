@@ -29,7 +29,7 @@ if [ ! -e $work_dir/black_list ];then
 fi
 
 # Check network connection
-for i in $(seq 1 30); do
+for i in $(seq 1 100); do
    ping -c 1 www.baidu.com > /dev/null 2>&1
    if [ $? -eq 0 ];then
    break;
@@ -92,6 +92,7 @@ sed -i '/^#/d' $work_dir/hosts
 sed -i '/^</d' $work_dir/hosts
 sed -i '/^>/d' $work_dir/hosts
 sed -i '/^::1/d' $work_dir/hosts
+sed -i '/^|/d' $work_dir/hosts
 sed -i '/localhost/d' $work_dir/hosts
 sed -i '/ip6-localhost/d' $work_dir/hosts
 sed -i '/ip6-loopback/d' $work_dir/hosts
