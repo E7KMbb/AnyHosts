@@ -7,7 +7,7 @@
 MODDIR=${0%/*}
 
 # This script will be executed in late_start service mode
-
+work_dir=/sdcard/Android/AnyHosts
 wait_count=0
 until [ $(getprop sys.boot_completed) -eq 1 ] && [ -d "$work_dir" ]; do
   sleep 2

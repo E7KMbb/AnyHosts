@@ -16,19 +16,19 @@
 
 ## 订阅链接
 
-* 在 `/sdcard/AnyHosts/hosts_link` 内填写订阅地址。
+* 在 `/sdcard/Android/AnyHosts/hosts_link` 内填写订阅地址。
 
 ### • 填写方式为写在同一行每个链接间隔一个空格或每行一个
 
 ## 用户规则
 
-* 在`/sdcard/AnyHosts/user_rules`内填写自己的规则
+* 在`/sdcard/Android/AnyHosts/user_rules`内填写自己的规则
 
 ### • 规则填写格式为hosts填写规则 即：每行一个
 
 ## 黑名单
 
-* 在`/sdcard/AnyHosts/black_list`内填写自己的规则
+* 在`/sdcard/Android/AnyHosts/black_list`内填写自己的规则
 
 * 填写规则
 

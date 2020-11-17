@@ -18,19 +18,19 @@ You can download the release installer zip file and install it via the Magisk Ma
 
 ## hosts_link
 
-* Fill in your subscription address in `/sdcard/AnyHosts/hosts_link`
+* Fill in your subscription address in `/sdcard/Android/AnyHosts/hosts_link`
 
 ### • Fill in rules is each link should separate by space or just one link per line.
 
 ## user_rules
 
-* Fill your own rules in `/sdcard/AnyHosts/user_rules`
+* Fill your own rules in `/sdcard/Android/AnyHosts/user_rules`
 
 ### • Fill in rules is one rule per line.
 
 ## black_list
 
-* Fill your own rules in `/sdcard/AnyHosts/black_list`
+* Fill your own rules in `/sdcard/Android/AnyHosts/black_list`
 
 * Fill in rules.
 

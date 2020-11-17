@@ -84,7 +84,7 @@ ui_print "- Extracting module files"
 unzip -o "$ZIPFILE" -x 'META-INF/*' -d $MODPATH >&2
 
 # Create work files
-work_dir=/sdcard/AnyHosts
+work_dir=/sdcard/Android/AnyHosts
 if [ ! -d $work_dir ];then
    mkdir -p $work_dir
 fi

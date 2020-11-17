@@ -1,5 +1,5 @@
 #!/system/bin/sh
-work_dir=/sdcard/AnyHosts
+work_dir=/sdcard/Android/AnyHosts
 hosts_dir=/data/adb/modules/hosts/system/etc
 curdate="`date +%Y-%m-%d,%H:%M:%S`"
 
@@ -64,7 +64,7 @@ for name in $(seq 1 $((${cycles} - 1))); do
 done
 
 # User rules
-if [ ! -s $work_dir/user_rules ];then
+if [ -s $work_dir/user_rules ];then
    cat $work_dir/$(($name + 1)) $work_dir/user_rules > $work_dir/paceholder
    rm -rf $work_dir/$(($name + 1))
    mv $work_dir/paceholder $work_dir/$(($name + 1))
@@ -74,7 +74,7 @@ cat $work_dir/$(($name + 1)) |sort|uniq > $work_dir/hosts
 rm -rf $work_dir/$(($name + 1))
 
 # Black list
-if [ ! -s $work_dir/black_list ];then
+if [ -s $work_dir/black_list ];then
    black_list_text=$(cat $work_dir/black_list)
    for black_list in ${black_list_text[*]}; do
      if echo ${black_list} | grep -q "="; then
