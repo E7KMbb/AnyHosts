@@ -1,6 +1,6 @@
 id=AnyHosts
 name=AnyHosts
-version=v2
-versionCode=200
+version=v2.1
+versionCode=210
 author=Ai Sauce
 description=Automatic update script for customized hosts link, please click Systemless Hosts in the settings before use.
