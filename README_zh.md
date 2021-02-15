@@ -44,7 +44,19 @@
 
 * 通过Magisk Manager卸载模块。
 
-### 链接
+## 翻译
+
+* 使用su权限执行以下命令 
+```
+locale=$(getprop persist.sys.locale|awk -F "-" '{print $1"_"$NF}')
+[[ ${locale} == "" ]] && locale=$(settings get system system_locales|awk -F "," '{print $1}'|awk -F "-" '{print $1"_"$NF}')
+echo "${locale}"
+```
+* 创建带有.ini后缀的输出名称文件，翻译相关变量并提交pr
+
+## 链接
 * [GitHub](https://github.com/E7KMbb/AnyHosts)
+
+* [TG Group](https://t.me/aisauceupdate)
 
 * [捐赠](https://docs.qq.com/doc/DWVJKWVVDWURQZUZK?disableReturnList=1&_from=1)

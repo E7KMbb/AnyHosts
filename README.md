@@ -46,5 +46,17 @@ You can download the release installer zip file and install it via the Magisk Ma
 
 * Uninstall the module via Magisk Manager App.
 
-### Links
+## Translation
+
+* Sh the following commands with su permissions 
+```
+locale=$(getprop persist.sys.locale|awk -F "-" '{print $1"_"$NF}')
+[[ ${locale} == "" ]] && locale=$(settings get system system_locales|awk -F "," '{print $1}'|awk -F "-" '{print $1"_"$NF}')
+echo "${locale}"
+```
+* Create an output name file with .ini suffix, translate related variables and submit pr
+
+## Links
 * [GitHub](https://github.com/E7KMbb/AnyHosts)
+
+* [TG Group](https://t.me/aisauceupdate)
