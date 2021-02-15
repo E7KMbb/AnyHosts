@@ -79,8 +79,16 @@ REPLACE="
 # Install
 ##########################################################################################
 
+# Local lang
+locale=$(getprop persist.sys.locale|awk -F "-" '{print $1"_"$NF}')
+[[ ${locale} == "" ]] && locale=$(settings get system system_locales|awk -F "," '{print $1}'|awk -F "-" '{print $1"_"$NF}')
+if [ ! -e $MODPATH/script/${locale}.ini ];then
+   . $MODPATH/script/en_US.ini
+fi
+. $MODPATH/script/${locale}.ini
+
 # Extract $ZIPFILE to $MODPATH
-ui_print "- Extracting module files"
+ui_print "- ${LANG_UNZIP}"
 unzip -o "$ZIPFILE" -x 'META-INF/*' -d $MODPATH >&2
 
 # Create work files
@@ -96,7 +104,7 @@ if [ ! -e $work_dir/update.log ];then
 fi
 if [ ! -e $work_dir/Start.sh ];then
    touch $work_dir/Start.sh
-   echo "# Please execute under su authority" >> $work_dir/Start.sh
+   echo "${LANG_START}" >> $work_dir/Start.sh
    echo "sh /data/adb/modules/AnyHosts/script/functions.sh" >> $work_dir/Start.sh
 fi
 if [ ! -e $work_dir/hosts_link ];then

@@ -1,7 +1,16 @@
 #!/system/bin/sh
 work_dir=/sdcard/Android/AnyHosts
+script_dir=${0%/*}
 hosts_dir=/data/adb/modules/hosts/system/etc
 curdate="`date +%Y-%m-%d,%H:%M:%S`"
+
+# Local lang
+locale=$(getprop persist.sys.locale|awk -F "-" '{print $1"_"$NF}')
+[[ ${locale} == "" ]] && locale=$(settings get system system_locales|awk -F "," '{print $1}'|awk -F "-" '{print $1"_"$NF}')
+if [ ! -e $script_dir/${locale}.ini ];then
+   . $script_dir/en_US.ini
+fi
+. $script_dir/${locale}.ini
 
 # Create work files
 if [ ! -d $work_dir ];then
@@ -15,7 +24,7 @@ if [ ! -e $work_dir/update.log ];then
 fi
 if [ ! -e $work_dir/Start.sh ];then
    touch $work_dir/Start.sh
-   echo "# Please execute under su authority" >> $work_dir/Start.sh
+   echo "${LANG_START}" >> $work_dir/Start.sh
    echo "sh /data/adb/modules/AnyHosts/script/functions.sh" >> $work_dir/Start.sh
 fi
 if [ ! -e $work_dir/hosts_link ];then
@@ -51,7 +60,7 @@ elif $(wget --help > /dev/null 2>&1) ; then
       wget --no-check-certificate ${hosts_link} -O $work_dir/$cycles
       done
 else
-      echo "Error: Your device has no download command，please install Busybox for Android NDK" >> $work_dir/update.log
+      echo "${LANG_DOWNLOAD_ERROR}" >> $work_dir/update.log
       exit 0
 fi
 
@@ -97,29 +106,27 @@ sed -i '/localhost/d' $work_dir/hosts
 sed -i '/ip6-localhost/d' $work_dir/hosts
 sed -i '/ip6-loopback/d' $work_dir/hosts
 sed -i '1 i #********************************************************************************' $work_dir/hosts
-sed -i '2 i #By AnyHosts' $work_dir/hosts
-sed -i '3 i #for AiSauce' $work_dir/hosts
-sed -i '4 i #********************************************************************************' $work_dir/hosts
-sed -i '4G' $work_dir/hosts
-sed -i '6 i 127.0.0.1 localhost' $work_dir/hosts
-sed -i '7 i 127.0.0.1 ip6-localhost' $work_dir/hosts
-sed -i '8 i 127.0.0.1 ip6-loopback' $work_dir/hosts
-sed -i '9 i ::1 localhost' $work_dir/hosts
-sed -i '10 i ::1 ip6-localhost' $work_dir/hosts
-sed -i '11 i ::1 ip6-loopback' $work_dir/hosts
+sed -i '2 i #By AnyHosts for AiSauce' $work_dir/hosts
+sed -i '3 i #********************************************************************************' $work_dir/hosts
+sed -i '3G' $work_dir/hosts
+sed -i '5 i 127.0.0.1 localhost' $work_dir/hosts
+sed -i '6 i 127.0.0.1 ip6-localhost' $work_dir/hosts
+sed -i '7 i 127.0.0.1 ip6-loopback' $work_dir/hosts
+sed -i '8 i ::1 localhost' $work_dir/hosts
+sed -i '9 i ::1 ip6-localhost' $work_dir/hosts
+sed -i '10 i ::1 ip6-loopback' $work_dir/hosts
 
 # Check for updates
 Now=$(md5sum $hosts_dir/hosts | awk '{print $1}')
 New=$(md5sum  $work_dir/hosts | awk '{print $1}')
 if [ $Now = $New ]; then
    rm -rf $work_dir/hosts
-   echo "Not update: $curdate" >> $work_dir/update.log
+   echo "${LANG_NOT_UPDATE}: $curdate" >> $work_dir/update.log
 else
    mv -f $work_dir/hosts $hosts_dir/hosts
    chmod 644 $hosts_dir/hosts
    chown 0:0 $hosts_dir/hosts
    chcon u:object_r:system_file:s0 $hosts_dir/hosts
-   echo -n "Last update time: $curdate" >> $work_dir/update.log
-   echo " hosts dir:$hosts_dir/hosts" >> $work_dir/update.log
+   echo "${LANG_LAST_UPDATE_TIME}: $curdate ${LANG_HOSTS_DIR}:$hosts_dir/hosts" >> $work_dir/update.log
    sed -i '1d' $work_dir/update.log
 fi
