@@ -83,9 +83,9 @@ REPLACE="
 locale=$(getprop persist.sys.locale|awk -F "-" '{print $1"_"$NF}')
 [[ ${locale} == "" ]] && locale=$(settings get system system_locales|awk -F "," '{print $1}'|awk -F "-" '{print $1"_"$NF}')
 if [ ! -e $MODPATH/script/${locale}.ini ];then
-   . $MODPATH/script/en_US.ini
+   source $MODPATH/script/en_US.ini
 fi
-. $MODPATH/script/${locale}.ini
+source $MODPATH/script/${locale}.ini
 
 # Extract $ZIPFILE to $MODPATH
 ui_print "- ${LANG_UNZIP}"
