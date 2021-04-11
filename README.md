@@ -54,7 +54,7 @@ locale=$(getprop persist.sys.locale|awk -F "-" '{print $1"_"$NF}')
 [[ ${locale} == "" ]] && locale=$(settings get system system_locales|awk -F "," '{print $1}'|awk -F "-" '{print $1"_"$NF}')
 echo "${locale}"
 ```
-* Create an output name file with .ini suffix, translate related variables and submit pr
+* Create an output name file with `.ini` suffix, translate related variables and submit pr
 
 ## Links
 * [GitHub](https://github.com/E7KMbb/AnyHosts)
