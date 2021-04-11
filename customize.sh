@@ -82,6 +82,10 @@ REPLACE="
 # Install
 ##########################################################################################
 
+# Extract $ZIPFILE to $MODPATH
+ui_print "- Extracting module files"
+unzip -o "$ZIPFILE" -x 'META-INF/*' -d $MODPATH >&2
+
 # Local lang
 locale=$(getprop persist.sys.locale|awk -F "-" '{print $1"_"$NF}')
 [[ ${locale} == "" ]] && locale=$(settings get system system_locales|awk -F "," '{print $1}'|awk -F "-" '{print $1"_"$NF}')
@@ -90,9 +94,6 @@ if [ ! -e $MODPATH/script/${locale}.ini ];then
 fi
 source $MODPATH/script/${locale}.ini
 
-# Extract $ZIPFILE to $MODPATH
-ui_print "- ${LANG_UNZIP}"
-unzip -o "$ZIPFILE" -x 'META-INF/*' -d $MODPATH >&2
 sed -i "s/<DESCRIPTION>/'${LANG_DESCRIPTION}'/g" $MODPATH/module.prop
 
 # Create work files
