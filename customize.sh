@@ -48,13 +48,16 @@
 ##########################################################################################
 
 ##########################################################################################
-# SKIPUNZIP
+# Variables
 ##########################################################################################
 
 # If you need even more customization and prefer to do everything on your own, declare SKIPUNZIP=1 in customize.sh to skip the extraction and applying default permissions/secontext steps.
 # Be aware that by doing so, your customize.sh will then be responsible to install everything by itself.
 SKIPUNZIP=1
+# If you need to call busybox inside MAGISK
+# Please mark ASH_STANDALONE=1 in customize.sh
 ASH_STANDALONE=1
+
 
 ##########################################################################################
 # Replace list
@@ -90,6 +93,7 @@ source $MODPATH/script/${locale}.ini
 # Extract $ZIPFILE to $MODPATH
 ui_print "- ${LANG_UNZIP}"
 unzip -o "$ZIPFILE" -x 'META-INF/*' -d $MODPATH >&2
+sed -i "s/<DESCRIPTION>/'${LANG_DESCRIPTION}'/g" $MODPATH/module.prop
 
 # Create work files
 work_dir=/sdcard/Android/AnyHosts

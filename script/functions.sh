@@ -51,17 +51,27 @@ cycles=0
 hosts_link_text=$(cat $work_dir/hosts_link)
 if $(curl -V > /dev/null 2>&1) ; then
     for hosts_link in ${hosts_link_text[*]}; do
-    cycles=$((${cycles} + 1))
-    curl "${hosts_link}" -k -L -o "$work_dir/$cycles" >&2
+       cycles=$((${cycles} + 1))
+       curl "${hosts_link}" -k -L -o "$work_dir/$cycles" >&2
+       if [ $? -gt 0 ]; then
+          rm -rf $work_dir/$cycles
+          touch $work_dir/$cycles
+          echo "${LANG_DOWNLOAD2_ERROR}"
+       fi
     done
 elif $(wget --help > /dev/null 2>&1) ; then
-      for hosts_link in ${hosts_link_text[*]}; do
-      cycles=$((${cycles} + 1))
-      wget --no-check-certificate ${hosts_link} -O $work_dir/$cycles
-      done
+    for hosts_link in ${hosts_link_text[*]}; do
+       cycles=$((${cycles} + 1))
+       wget --no-check-certificate ${hosts_link} -O $work_dir/$cycles
+       if [ $? -gt 0 ]; then
+          rm -rf $work_dir/$cycles
+          touch $work_dir/$cycles
+          echo "${LANG_DOWNLOAD2_ERROR}"
+       fi
+    done
 else
-      echo "${LANG_DOWNLOAD_ERROR}" >> $work_dir/update.log
-      exit 0
+    echo "${LANG_DOWNLOAD_ERROR}" >> $work_dir/update.log
+    exit 0
 fi
 
 # Merge hosts
