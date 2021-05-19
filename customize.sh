@@ -89,10 +89,11 @@ unzip -o "$ZIPFILE" -x 'META-INF/*' -d $MODPATH >&2
 # Local lang
 locale=$(getprop persist.sys.locale|awk -F "-" '{print $1"_"$NF}')
 [[ ${locale} == "" ]] && locale=$(settings get system system_locales|awk -F "," '{print $1}'|awk -F "-" '{print $1"_"$NF}')
-if [ ! -e $MODPATH/script/${locale}.ini ];then
-   source $MODPATH/script/en_US.ini
+if [ ! -e $MODPATH/${locale}.ini ];then
+   source $MODPATH/en_US.ini
+else
+   source $MODPATH/${locale}.ini
 fi
-source $MODPATH/script/${locale}.ini
 
 sed -i "s/<DESCRIPTION>/'${LANG_DESCRIPTION}'/g" $MODPATH/module.prop
 

@@ -1,16 +1,17 @@
 #!/system/bin/sh
+hosts_dir=/data/adb/modules/hosts/system/etc
 work_dir=/sdcard/Android/AnyHosts
 script_dir=${0%/*}
-hosts_dir=/data/adb/modules/hosts/system/etc
 curdate="`date +%Y-%m-%d,%H:%M:%S`"
 
 # Local lang
 locale=$(getprop persist.sys.locale|awk -F "-" '{print $1"_"$NF}')
 [[ ${locale} == "" ]] && locale=$(settings get system system_locales|awk -F "," '{print $1}'|awk -F "-" '{print $1"_"$NF}')
-if [ ! -e $script_dir/${locale}.ini ];then
-   source $script_dir/en_US.ini
+if [ ! -e $MODPATH/${locale}.ini ];then
+   source $MODPATH/en_US.ini
+else
+   source $MODPATH/${locale}.ini
 fi
-source $script_dir/${locale}.ini
 
 # Create work files
 if [ ! -d $work_dir ];then
@@ -110,7 +111,6 @@ fi
 sed -i '/^#/d' $work_dir/hosts
 sed -i '/^</d' $work_dir/hosts
 sed -i '/^>/d' $work_dir/hosts
-sed -i '/^::1/d' $work_dir/hosts
 sed -i '/^|/d' $work_dir/hosts
 sed -i '/localhost/d' $work_dir/hosts
 sed -i '/ip6-localhost/d' $work_dir/hosts

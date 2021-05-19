@@ -17,4 +17,4 @@ until [ $(getprop sys.boot_completed) -eq 1 ] && [ -d "$work_dir" ]; do
   fi
 done
 
-sh $MODDIR/script/functions.sh
+. $MODDIR/script/functions.sh
