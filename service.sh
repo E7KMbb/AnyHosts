@@ -18,3 +18,5 @@ until [ $(getprop sys.boot_completed) -eq 1 ] && [ -d "$work_dir" ]; do
 done
 
 . $MODDIR/script/functions.sh
+
+. $MODDIR/script/cron.sh

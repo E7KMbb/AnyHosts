@@ -102,16 +102,25 @@ work_dir=/sdcard/Android/AnyHosts
 if [ ! -d $work_dir ];then
    mkdir -p $work_dir
 fi
+if [ ! -e $work_dir/Cron.ini ];then
+   touch $work_dir/Cron.ini
+   LANG_CRON
+fi
 if [ ! -e $work_dir/update.log ];then
    touch $work_dir/update.log
    echo "paceholder" >> $work_dir/update.log
    sed -i "G;G;G;G;G" $work_dir/update.log
    sed -i '1d' $work_dir/update.log
 fi
+if [ ! -e $work_dir/Regular_update.sh ];then
+   touch $work_dir/Regular_update.sh
+   echo "${LANG_REGULAR_UPDATE}" >> $work_dir/Regular_update.sh
+   echo "sh $NVBASE/modules/$MODID/script/cron.sh" >> $work_dir/Regular_update.sh
+fi
 if [ ! -e $work_dir/Start.sh ];then
    touch $work_dir/Start.sh
    echo "${LANG_START}" >> $work_dir/Start.sh
-   echo "sh /data/adb/modules/AnyHosts/script/functions.sh" >> $work_dir/Start.sh
+   echo "sh $NVBASE/modules/$MODID/script/functions.sh" >> $work_dir/Start.sh
 fi
 if [ ! -e $work_dir/hosts_link ];then
    touch $work_dir/hosts_link

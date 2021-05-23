@@ -17,16 +17,25 @@ fi
 if [ ! -d $work_dir ];then
    mkdir -p $work_dir
 fi
+if [ ! -e $work_dir/Cron.ini ];then
+   touch $work_dir/Cron.ini
+   LANG_CRON
+fi
 if [ ! -e $work_dir/update.log ];then
    touch $work_dir/update.log
    echo "paceholder" >> $work_dir/update.log
    sed -i "G;G;G;G;G" $work_dir/update.log
    sed -i '1d' $work_dir/update.log
 fi
+if [ ! -e $work_dir/Regular_update.sh ];then
+   touch $work_dir/Regular_update.sh
+   echo "${LANG_REGULAR_UPDATE}" >> $work_dir/Regular_update.sh
+   echo "sh $script_dir/cron.sh" >> $work_dir/Regular_update.sh
+fi
 if [ ! -e $work_dir/Start.sh ];then
    touch $work_dir/Start.sh
    echo "${LANG_START}" >> $work_dir/Start.sh
-   echo "sh /data/adb/modules/AnyHosts/script/functions.sh" >> $work_dir/Start.sh
+   echo "sh $script_dir/functions.sh" >> $work_dir/Start.sh
 fi
 if [ ! -e $work_dir/hosts_link ];then
    touch $work_dir/hosts_link
@@ -40,9 +49,15 @@ fi
 
 # Check network connection
 for i in $(seq 1 100); do
-   ping -c 1 www.baidu.com > /dev/null 2>&1
-   if [ $? -eq 0 ];then
+   if [[ $(ping -c 1 1.2.4.8) ]] >/dev/null 2>&1; then
    break;
+   elif [[ $(ping -c 1 8.8.8.8) ]] >/dev/null 2>&1; then
+   break;
+   elif [[ $(ping -c 1 114.114.114.114) ]] >/dev/null 2>&1; then
+   break;
+   else
+      echo "${LANG_NETWORK_ERROR}"
+	  echo "${LANG_NETWORK_ERROR}" >> $work_dir/update.log
    fi
    sleep 10
 done
@@ -58,6 +73,7 @@ if $(curl -V > /dev/null 2>&1) ; then
           rm -rf $work_dir/$cycles
           touch $work_dir/$cycles
           echo "${LANG_DOWNLOAD2_ERROR}"
+          echo "${LANG_DOWNLOAD2_ERROR}" >> $work_dir/update.log
        fi
     done
 elif $(wget --help > /dev/null 2>&1) ; then
@@ -68,9 +84,11 @@ elif $(wget --help > /dev/null 2>&1) ; then
           rm -rf $work_dir/$cycles
           touch $work_dir/$cycles
           echo "${LANG_DOWNLOAD2_ERROR}"
+          echo "${LANG_DOWNLOAD2_ERROR}" >> $work_dir/update.log
        fi
     done
 else
+    echo "${LANG_DOWNLOAD_ERROR}"
     echo "${LANG_DOWNLOAD_ERROR}" >> $work_dir/update.log
     exit 0
 fi
@@ -90,6 +108,7 @@ if [ -s $work_dir/user_rules ];then
    mv $work_dir/paceholder $work_dir/$(($name + 1))
 fi
 
+sed -i "s/0.0.0.0/127.0.0.1/g" $work_dir/$(($name + 1))
 cat $work_dir/$(($name + 1)) |sort|uniq > $work_dir/hosts
 rm -rf $work_dir/$(($name + 1))
 
@@ -131,6 +150,7 @@ Now=$(md5sum $hosts_dir/hosts | awk '{print $1}')
 New=$(md5sum  $work_dir/hosts | awk '{print $1}')
 if [ $Now = $New ]; then
    rm -rf $work_dir/hosts
+   echo "${LANG_NOT_UPDATE}"
    echo "${LANG_NOT_UPDATE}: $curdate" >> $work_dir/update.log
 else
    mv -f $work_dir/hosts $hosts_dir/hosts
