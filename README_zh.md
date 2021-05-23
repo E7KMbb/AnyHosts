@@ -40,6 +40,11 @@
 
 ### • 填写方式为写在同一行每个规则间隔一个空格或每行一个
 
+### 定时更新(默认关闭)
+* 控制开启与关闭，将`Cron.ini`中的`regular_update`参数修改为`on/off`，然后执行`Regular_update.sh`便可切换工作状态
+
+* 修改`/sdcard/Android/AnyHosts/Cron.ini`中的参数后执行`Regular_update.sh`以应用，更新时间的填写规则请参考[crontabs命令教程](https://m.runoob.com/linux/linux-comm-crontab.html)
+
 ## 卸载
 
 * 通过Magisk Manager卸载模块。
