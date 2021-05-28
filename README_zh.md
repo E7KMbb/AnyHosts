@@ -65,3 +65,6 @@ echo "${locale}"
 * [TG Group](https://t.me/aisauceupdate)
 
 * [捐赠](https://docs.qq.com/doc/DWVJKWVVDWURQZUZK?disableReturnList=1&_from=1)
+
+## Liense
+[GPL-3.0](https://github.com/E7KMbb/AnyHosts/LICENSE)

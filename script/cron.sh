@@ -3,7 +3,7 @@ script_dir=${0%/*}
 
 . $work_dir/Cron.ini
 
-[ -f /data/adb/magisk/busybox ] && alias crond="/data/adb/magisk/busybox crond" && return 0
+[ -f /data/adb/magisk/busybox ] && alias crond="/data/adb/magisk/busybox crond"
 
 if [ $regular_update = "on" ]; then
    pid_text=$(ps -elf | grep "$script_dir/crontabs" | awk -F ' ' '{print $2}')

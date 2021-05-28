@@ -21,6 +21,13 @@ if [ ! -e $work_dir/Cron.ini ];then
    touch $work_dir/Cron.ini
    LANG_CRON
 fi
+if [ ! -e $work_dir/select.ini ];then
+   touch $work_dir/select.ini
+   echo "# ${LANG_BOOT_START_UPDATE_SELECT}. true/false" >> $work_dir/select.ini
+   echo "update_boot_start='false'" >> $work_dir/select.ini
+   echo "# ${LANG_BOOT_START_REGULAR_UPDATE_SELECT}. true/false" >> $work_dir/select.ini
+   echo "regular_update_boot_start='false'" >> $work_dir/select.ini
+fi
 if [ ! -e $work_dir/update.log ];then
    touch $work_dir/update.log
    echo "paceholder" >> $work_dir/update.log
@@ -108,7 +115,32 @@ if [ -s $work_dir/user_rules ];then
    mv $work_dir/paceholder $work_dir/$(($name + 1))
 fi
 
-sed -i "s/0.0.0.0/127.0.0.1/g" $work_dir/$(($name + 1))
+# GitHub access acceleration hosts
+GitHub_IP=`curl -skL "https://github.com.ipaddress.com/" | egrep -o '<li>[0-9.]{11,}</li>' | egrep -o -m 1 '[0-9.]{11,}'`
+GitHub_IP2=`curl -skL "https://fastly.net.ipaddress.com/github.global.ssl.fastly.net" | egrep -o '<li>[0-9.]{11,}</li>' | egrep -o -m 1 '[0-9.]{11,}'`
+GitHub_IP3=`curl -skL "https://github.com.ipaddress.com/assets-cdn.github.com" | egrep -o '<li>[0-9.]{11,}</li>' | egrep -o -m 1 '[0-9.]{11,}'`
+if [[ ! -z "$GitHub_IP" || ! -z "$GitHub_IP2" || ! -z "$GitHub_IP3" ]]; then
+   if ( ! grep " github.com" $(($name + 1))); then
+      echo "$GitHub_IP github.com" $(($name + 1))
+   fi
+   if ( ! grep " github.global.ssl.fastly.net" $(($name + 1))); then
+      echo "$GitHub_IP2 github.global.ssl.fastly.net" $(($name + 1))
+   fi
+   if ( ! grep " assets-cdn.github.com" $(($name + 1))); then
+      echo "$GitHub_IP3 assets-cdn.github.com" $(($name + 1))
+   fi
+fi
+
+# Remove duplicates
+sed -i '/^ /d' $work_dir/$(($name + 1))
+sed -i '/^#/d' $work_dir/$(($name + 1))
+sed -i '/^</d' $work_dir/$(($name + 1))
+sed -i '/^>/d' $work_dir/$(($name + 1))
+sed -i '/^|/d' $work_dir/$(($name + 1))
+sed -i '/localhost/d' $work_dir/$(($name + 1))
+sed -i '/ip6-localhost/d' $work_dir/$(($name + 1))
+sed -i '/ip6-loopback/d' $work_dir/$(($name + 1))
+sed -i "s/0.0.0.0 /127.0.0.1 /g" $work_dir/$(($name + 1))
 cat $work_dir/$(($name + 1)) |sort|uniq > $work_dir/hosts
 rm -rf $work_dir/$(($name + 1))
 
@@ -127,13 +159,6 @@ if [ -s $work_dir/black_list ];then
 fi
 
 # Add necessary content
-sed -i '/^#/d' $work_dir/hosts
-sed -i '/^</d' $work_dir/hosts
-sed -i '/^>/d' $work_dir/hosts
-sed -i '/^|/d' $work_dir/hosts
-sed -i '/localhost/d' $work_dir/hosts
-sed -i '/ip6-localhost/d' $work_dir/hosts
-sed -i '/ip6-loopback/d' $work_dir/hosts
 sed -i '1 i #********************************************************************************' $work_dir/hosts
 sed -i '2 i #By AnyHosts for AiSauce' $work_dir/hosts
 sed -i '3 i #********************************************************************************' $work_dir/hosts
@@ -153,6 +178,7 @@ if [ $Now = $New ]; then
    echo "${LANG_NOT_UPDATE}"
    echo "${LANG_NOT_UPDATE}: $curdate" >> $work_dir/update.log
 else
+   rm -rf $hosts_dir/hosts
    mv -f $work_dir/hosts $hosts_dir/hosts
    chmod 644 $hosts_dir/hosts
    chown 0:0 $hosts_dir/hosts

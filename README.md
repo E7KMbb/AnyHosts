@@ -65,3 +65,6 @@ echo "${locale}"
 * [GitHub](https://github.com/E7KMbb/AnyHosts)
 
 * [TG Group](https://t.me/aisauceupdate)
+
+## Liense
+[GPL-3.0](https://github.com/E7KMbb/AnyHosts/LICENSE)
