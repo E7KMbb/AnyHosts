@@ -8,9 +8,9 @@ curdate="`date +%Y-%m-%d,%H:%M:%S`"
 locale=$(getprop persist.sys.locale|awk -F "-" '{print $1"_"$NF}')
 [[ ${locale} == "" ]] && locale=$(settings get system system_locales|awk -F "," '{print $1}'|awk -F "-" '{print $1"_"$NF}')
 if [ ! -e $MODPATH/${locale}.ini ];then
-   source $MODPATH/en_US.ini
+   . $MODPATH/en_US.ini
 else
-   source $MODPATH/${locale}.ini
+   . $MODPATH/${locale}.ini
 fi
 
 # Create work files
@@ -37,12 +37,12 @@ fi
 if [ ! -e $work_dir/Regular_update.sh ];then
    touch $work_dir/Regular_update.sh
    echo "${LANG_REGULAR_UPDATE}" >> $work_dir/Regular_update.sh
-   echo "sh $script_dir/cron.sh" >> $work_dir/Regular_update.sh
+   echo ". $script_dir/cron.sh" >> $work_dir/Regular_update.sh
 fi
 if [ ! -e $work_dir/Start.sh ];then
    touch $work_dir/Start.sh
    echo "${LANG_START}" >> $work_dir/Start.sh
-   echo "sh $script_dir/functions.sh" >> $work_dir/Start.sh
+   echo ". $script_dir/functions.sh" >> $work_dir/Start.sh
 fi
 if [ ! -e $work_dir/hosts_link ];then
    touch $work_dir/hosts_link
@@ -62,9 +62,11 @@ for i in $(seq 1 100); do
    break;
    elif [[ $(ping -c 1 114.114.114.114) ]] >/dev/null 2>&1; then
    break;
-   else
+   fi
+   if [ $i = 100 ]; then
       echo "${LANG_NETWORK_ERROR}"
 	  echo "${LANG_NETWORK_ERROR}" >> $work_dir/update.log
+	  exit 0
    fi
    sleep 10
 done

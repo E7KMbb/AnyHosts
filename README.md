@@ -42,7 +42,14 @@ You can download the release installer zip file and install it via the Magisk Ma
 
 ### • Fill in rules is each rule should separate by space or just one rule per line.
 
+### select.ini
+
+* Parameters selected during installation
+
+* Modify the parameters in `/sdcard/Android/AnyHosts/select.ini` to control the boot-up update and start-up timing update
+
 ### Timed update (default disallow)
+
 * To control the opening and closing, modify the parameter of `regular_update` in `Cron.ini` to `on/off`, and then execute `Regular_update.sh` to switch the working state
 
 * Modify the parameters in `/sdcard/Android/AnyHosts/Cron.ini` and execute `Regular_update.sh` to apply. Please refer to [crontabs command tutorial](https://opensource.com/article/17/11/how-use-cron-linux) for the rules for filling in the update time

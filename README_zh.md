@@ -40,7 +40,14 @@
 
 ### • 填写方式为写在同一行每个规则间隔一个空格或每行一个
 
+### 选择配置
+
+* 安装时选择的参数
+
+* 在`/sdcard/Android/AnyHosts/select.ini`中修改参数控制开机自启更新和开机启用定时更新
+
 ### 定时更新(默认关闭)
+
 * 控制开启与关闭，将`Cron.ini`中的`regular_update`参数修改为`on/off`，然后执行`Regular_update.sh`便可切换工作状态
 
 * 修改`/sdcard/Android/AnyHosts/Cron.ini`中的参数后执行`Regular_update.sh`以应用，更新时间的填写规则请参考[crontabs命令教程](https://m.runoob.com/linux/linux-comm-crontab.html)
