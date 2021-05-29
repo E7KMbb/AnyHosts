@@ -7,10 +7,10 @@ curdate="`date +%Y-%m-%d,%H:%M:%S`"
 # Local lang
 locale=$(getprop persist.sys.locale|awk -F "-" '{print $1"_"$NF}')
 [[ ${locale} == "" ]] && locale=$(settings get system system_locales|awk -F "," '{print $1}'|awk -F "-" '{print $1"_"$NF}')
-if [ ! -e $MODPATH/${locale}.ini ];then
-   . $MODPATH/en_US.ini
+if [ -e $script_dir/${locale}.ini ];then
+   . $script_dir/${locale}.ini
 else
-   . $MODPATH/${locale}.ini
+   . $script_dir/en_US.ini
 fi
 
 # Create work files
