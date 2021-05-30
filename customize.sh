@@ -89,13 +89,13 @@ unzip -o "$ZIPFILE" -x 'META-INF/*' -d $MODPATH >&2
 # Local lang
 locale=$(getprop persist.sys.locale|awk -F "-" '{print $1"_"$NF}')
 [[ ${locale} == "" ]] && locale=$(settings get system system_locales|awk -F "," '{print $1}'|awk -F "-" '{print $1"_"$NF}')
-if [ ! -e $MODPATH/${locale}.ini ];then
-   . $MODPATH/script/en_US.ini
-else
+if [ -e $MODPATH/script/${locale}.ini ];then
    . $MODPATH/script/${locale}.ini
+else
+   . $MODPATH/script/en_US.ini
 fi
 
-sed -i "s/<DESCRIPTION>/'${LANG_DESCRIPTION}'/g" $MODPATH/module.prop
+sed -i 's/<DESCRIPTION>/'"${LANG_DESCRIPTION}"'/g' $MODPATH/module.prop
 
 # External Tools
 chmod -R 0755 $MODPATH/tools
@@ -160,6 +160,7 @@ if [ ! -e $work_dir/Cron.ini ];then
    touch $work_dir/Cron.ini
    LANG_CRON
 fi
+rm -rf $work_dir/select.ini
 if [ ! -e $work_dir/select.ini ];then
    touch $work_dir/select.ini
    echo "# ${LANG_BOOT_START_UPDATE_SELECT}. true/false" >> $work_dir/select.ini
