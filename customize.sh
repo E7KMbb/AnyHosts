@@ -174,11 +174,13 @@ if [ ! -e $work_dir/update.log ];then
    sed -i "G;G;G;G;G" $work_dir/update.log
    sed -i '1d' $work_dir/update.log
 fi
+rm -rf $work_dir/Regular_update.sh
 if [ ! -e $work_dir/Regular_update.sh ];then
    touch $work_dir/Regular_update.sh
    echo "${LANG_REGULAR_UPDATE}" >> $work_dir/Regular_update.sh
    echo "sh $NVBASE/modules/$MODID/script/cron.sh" >> $work_dir/Regular_update.sh
 fi
+rm -rf $work_dir/Start.sh
 if [ ! -e $work_dir/Start.sh ];then
    touch $work_dir/Start.sh
    echo "${LANG_START}" >> $work_dir/Start.sh
