@@ -1,5 +1,5 @@
 #!/system/bin/sh
-hosts_dir=/data/adb/modules/hosts/system/etc
+hosts_dir=/system/etc
 work_dir=/sdcard/Android/AnyHosts
 script_dir=${0%/*}
 curdate="`date +%Y-%m-%d,%H:%M:%S`"

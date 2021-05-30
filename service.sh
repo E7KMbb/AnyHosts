@@ -17,10 +17,10 @@ until [ $(getprop sys.boot_completed) -eq 1 ] && [ -d "$work_dir" ]; do
   fi
 done
 
-. $work_dir/select.ini
+sh $work_dir/select.ini
 if [ $update_boot_start = "true" ]; then
-. $MODDIR/script/functions.sh
+sh $MODDIR/script/functions.sh
 fi
 if [ $regular_update_boot_start = "true" ]; then
-. $MODDIR/script/cron.sh
+sh $MODDIR/script/cron.sh
 fi
