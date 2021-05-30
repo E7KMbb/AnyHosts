@@ -37,12 +37,12 @@ fi
 if [ ! -e $work_dir/Regular_update.sh ];then
    touch $work_dir/Regular_update.sh
    echo "${LANG_REGULAR_UPDATE}" >> $work_dir/Regular_update.sh
-   echo ". $script_dir/cron.sh" >> $work_dir/Regular_update.sh
+   echo "sh $script_dir/cron.sh" >> $work_dir/Regular_update.sh
 fi
 if [ ! -e $work_dir/Start.sh ];then
    touch $work_dir/Start.sh
    echo "${LANG_START}" >> $work_dir/Start.sh
-   echo ". $script_dir/functions.sh" >> $work_dir/Start.sh
+   echo "sh $script_dir/functions.sh" >> $work_dir/Start.sh
 fi
 if [ ! -e $work_dir/hosts_link ];then
    touch $work_dir/hosts_link
