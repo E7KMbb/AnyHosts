@@ -118,9 +118,9 @@ if [ -s $work_dir/user_rules ];then
 fi
 
 # GitHub access acceleration hosts
-GitHub_IP=`curl -skL "https://github.com.ipaddress.com/" | egrep -o '<li>[0-9.]{11,}</li>' | egrep -o -m 1 '[0-9.]{11,}'`
-GitHub_IP2=`curl -skL "https://fastly.net.ipaddress.com/github.global.ssl.fastly.net" | egrep -o '<li>[0-9.]{11,}</li>' | egrep -o -m 1 '[0-9.]{11,}'`
-GitHub_IP3=`curl -skL "https://github.com.ipaddress.com/assets-cdn.github.com" | egrep -o '<li>[0-9.]{11,}</li>' | egrep -o -m 1 '[0-9.]{11,}'`
+GitHub_IP=`curl --user-agent "Mozilla/5.0 (Linux; Android 7.1.1; Mi Note 3 Build/NMF26X; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/61.0.3163.98 Mobile Safari/537.36" -skL "https://github.com.ipaddress.com/" | egrep -o '<li>[0-9.]{11,}</li>' | egrep -o -m 1 '[0-9.]{11,}'
+GitHub_IP2=`curl --user-agent "Mozilla/5.0 (Linux; Android 7.1.1; Mi Note 3 Build/NMF26X; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/61.0.3163.98 Mobile Safari/537.36" -skL "https://fastly.net.ipaddress.com/github.global.ssl.fastly.net" | egrep -o '<li>[0-9.]{11,}</li>' | egrep -o -m 1 '[0-9.]{11,}'`
+GitHub_IP3=`curl --user-agent "Mozilla/5.0 (Linux; Android 7.1.1; Mi Note 3 Build/NMF26X; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/61.0.3163.98 Mobile Safari/537.36" -skL "https://github.com.ipaddress.com/assets-cdn.github.com" | egrep -o '<li>[0-9.]{11,}</li>' | egrep -o -m 1 '[0-9.]{11,}'`
 if [[ ! -z "$GitHub_IP" || ! -z "$GitHub_IP2" || ! -z "$GitHub_IP3" ]]; then
    if ( ! grep " github.com" $(($name + 1))); then
       echo "$GitHub_IP github.com" $(($name + 1))
