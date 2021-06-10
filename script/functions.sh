@@ -78,7 +78,7 @@ if $(curl -V > /dev/null 2>&1) ; then
     for hosts_link in ${hosts_link_text[*]}; do
        cycles=$((${cycles} + 1))
        curl "${hosts_link}" -k -L -o "$work_dir/$cycles" >&2
-       if [ ! -e $work_dir/$cycles ]; then
+       if [[ $? -gt 0 || ! -e $work_dir/$cycles ]]; then
           rm -rf $work_dir/$cycles
           touch $work_dir/$cycles
           echo "${LANG_DOWNLOAD2_ERROR}"
@@ -89,7 +89,7 @@ elif $(wget --help > /dev/null 2>&1) ; then
     for hosts_link in ${hosts_link_text[*]}; do
        cycles=$((${cycles} + 1))
        wget --no-check-certificate ${hosts_link} -O $work_dir/$cycles
-       if [ ! -e $work_dir/$cycles ]; then
+       if [[ $? -gt 0 || ! -e $work_dir/$cycles ]]; then
           rm -rf $work_dir/$cycles
           touch $work_dir/$cycles
           echo "${LANG_DOWNLOAD2_ERROR}"
