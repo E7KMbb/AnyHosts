@@ -1,7 +1,16 @@
 work_dir=/sdcard/Android/Anyhosts
 script_dir=${0%/*}
 
-. $work_dir/Cron.ini
+# Local lang
+locale=$(getprop persist.sys.locale|awk -F "-" '{print $1"_"$NF}')
+[[ ${locale} == "" ]] && locale=$(settings get system system_locales|awk -F "," '{print $1}'|awk -F "-" '{print $1"_"$NF}')
+if [ -e $script_dir/${locale}.ini ];then
+   sh $script_dir/${locale}.ini
+else
+   sh $script_dir/en_US.ini
+fi
+
+sh $work_dir/Cron.ini
 
 [ -f /data/adb/magisk/busybox ] && alias crond="/data/adb/magisk/busybox crond"
 
@@ -15,14 +24,14 @@ if [ $regular_update = "on" ]; then
    echo "$M $H $DOM $MO $DOW  sh $script_dir/functions.sh" >> $script_dir/crontabs/root
    chmod 777 $script_dir/crontabs/root
    crond -b -c $script_dir/crontabs
-   echo "已开启定时更新服务"
+   echo "${LANG_CRON_ON}"
 elif [ $regular_update = "off" ]; then
    pid_text=$(ps -elf | grep "$script_dir/crontabs" | awk -F ' ' '{print $2}')
    for pid in ${pid_text[*]}; do
       kill -9 $pid &> /dev/null
    done
-   echo "已关闭定时更新服务"
+   echo "${LANG_CRON_OFF}"
 else
-   echo "错误参数:$regular_update"
-   echo "请输入on/off"
+   echo "${LANG_CRON_ERROR}:$regular_update"
+   echo "${LANG_CRON_ERROR2}"
 fi

@@ -8,9 +8,9 @@ curdate="`date +%Y-%m-%d,%H:%M:%S`"
 locale=$(getprop persist.sys.locale|awk -F "-" '{print $1"_"$NF}')
 [[ ${locale} == "" ]] && locale=$(settings get system system_locales|awk -F "," '{print $1}'|awk -F "-" '{print $1"_"$NF}')
 if [ -e $script_dir/${locale}.ini ];then
-   . $script_dir/${locale}.ini
+   sh $script_dir/${locale}.ini
 else
-   . $script_dir/en_US.ini
+   sh $script_dir/en_US.ini
 fi
 
 # Create work files
@@ -78,7 +78,7 @@ if $(curl -V > /dev/null 2>&1) ; then
     for hosts_link in ${hosts_link_text[*]}; do
        cycles=$((${cycles} + 1))
        curl "${hosts_link}" -k -L -o "$work_dir/$cycles" >&2
-       if [ $? -gt 0 ]; then
+       if [ ! -e $work_dir/$cycles ]; then
           rm -rf $work_dir/$cycles
           touch $work_dir/$cycles
           echo "${LANG_DOWNLOAD2_ERROR}"
@@ -89,7 +89,7 @@ elif $(wget --help > /dev/null 2>&1) ; then
     for hosts_link in ${hosts_link_text[*]}; do
        cycles=$((${cycles} + 1))
        wget --no-check-certificate ${hosts_link} -O $work_dir/$cycles
-       if [ $? -gt 0 ]; then
+       if [ ! -e $work_dir/$cycles ]; then
           rm -rf $work_dir/$cycles
           touch $work_dir/$cycles
           echo "${LANG_DOWNLOAD2_ERROR}"
@@ -118,18 +118,18 @@ if [ -s $work_dir/user_rules ];then
 fi
 
 # GitHub access acceleration hosts
-GitHub_IP=`curl --user-agent "Mozilla/5.0 (Linux; Android 7.1.1; Mi Note 3 Build/NMF26X; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/61.0.3163.98 Mobile Safari/537.36" -skL "https://github.com.ipaddress.com/" | egrep -o '<li>[0-9.]{11,}</li>' | egrep -o -m 1 '[0-9.]{11,}'
-GitHub_IP2=`curl --user-agent "Mozilla/5.0 (Linux; Android 7.1.1; Mi Note 3 Build/NMF26X; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/61.0.3163.98 Mobile Safari/537.36" -skL "https://fastly.net.ipaddress.com/github.global.ssl.fastly.net" | egrep -o '<li>[0-9.]{11,}</li>' | egrep -o -m 1 '[0-9.]{11,}'`
-GitHub_IP3=`curl --user-agent "Mozilla/5.0 (Linux; Android 7.1.1; Mi Note 3 Build/NMF26X; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/61.0.3163.98 Mobile Safari/537.36" -skL "https://github.com.ipaddress.com/assets-cdn.github.com" | egrep -o '<li>[0-9.]{11,}</li>' | egrep -o -m 1 '[0-9.]{11,}'`
-if [[ ! -z "$GitHub_IP" || ! -z "$GitHub_IP2" || ! -z "$GitHub_IP3" ]]; then
-   if ( ! grep " github.com" $(($name + 1))); then
-      echo "$GitHub_IP github.com" $(($name + 1))
+GitHub_IP=$(curl --user-agent "Mozilla/5.0 (Linux; Android 7.1.1; Mi Note 3 Build/NMF26X; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/61.0.3163.98 Mobile Safari/537.36" -skL "https://github.com.ipaddress.com/" | egrep -o '<li>[0-9.]{11,}</li>' | egrep -o -m 1 '[0-9.]{11,}')
+GitHub_IP2=$(curl --user-agent "Mozilla/5.0 (Linux; Android 7.1.1; Mi Note 3 Build/NMF26X; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/61.0.3163.98 Mobile Safari/537.36" -skL "https://fastly.net.ipaddress.com/github.global.ssl.fastly.net" | egrep -o '<li>[0-9.]{11,}</li>' | egrep -o -m 1 '[0-9.]{11,}')
+GitHub_IP3=$(curl --user-agent "Mozilla/5.0 (Linux; Android 7.1.1; Mi Note 3 Build/NMF26X; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/61.0.3163.98 Mobile Safari/537.36" -skL "https://github.com.ipaddress.com/assets-cdn.github.com" | egrep -o '<li>[0-9.]{11,}</li>' | egrep -o -m 1 '[0-9.]{11,}')
+if [[ ! -z "${GitHub_IP}" || ! -z "${GitHub_IP2}" || ! -z "${GitHub_IP3}" ]]; then
+   if ( ! grep " github.com" $work_dir/$(($name + 1))); then
+      echo "${GitHub_IP} github.com" >> $work_dir/$(($name + 1))
    fi
-   if ( ! grep " github.global.ssl.fastly.net" $(($name + 1))); then
-      echo "$GitHub_IP2 github.global.ssl.fastly.net" $(($name + 1))
+   if ( ! grep " github.global.ssl.fastly.net" $work_dir/$(($name + 1))); then
+      echo "${GitHub_IP2} github.global.ssl.fastly.net" >> $work_dir/$(($name + 1))
    fi
-   if ( ! grep " assets-cdn.github.com" $(($name + 1))); then
-      echo "$GitHub_IP3 assets-cdn.github.com" $(($name + 1))
+   if ( ! grep " assets-cdn.github.com" $work_dir/$(($name + 1))); then
+      echo "${GitHub_IP3} assets-cdn.github.com" >> $work_dir/$(($name + 1))
    fi
 fi
 
@@ -139,6 +139,13 @@ sed -i '/^#/d' $work_dir/$(($name + 1))
 sed -i '/^</d' $work_dir/$(($name + 1))
 sed -i '/^>/d' $work_dir/$(($name + 1))
 sed -i '/^|/d' $work_dir/$(($name + 1))
+sed -i '/^@/d' $work_dir/$(($name + 1))
+sed -i '/^./d' $work_dir/$(($name + 1))
+sed -i '/^-/d' $work_dir/$(($name + 1))
+sed -i '/^!/d' $work_dir/$(($name + 1))
+sed -i '/^$/d' $work_dir/$(($name + 1))
+sed -i '/^\[/d' $work_dir/$(($name + 1))
+sed -i '/^~/d' $work_dir/$(($name + 1))
 sed -i '/localhost/d' $work_dir/$(($name + 1))
 sed -i '/ip6-localhost/d' $work_dir/$(($name + 1))
 sed -i '/ip6-loopback/d' $work_dir/$(($name + 1))
