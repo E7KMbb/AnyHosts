@@ -20,11 +20,11 @@ You can download the release installer zip file and install it via the Magisk Ma
 
 * Fill in your subscription address in `/sdcard/Android/AnyHosts/hosts_link`
 
-### • Fill in rules is each link should separate by space or just one link per line.
+### • Fill in rules is one rule per line.
 
-## user_rules
+## local_hosts
 
-* Fill your own rules in `/sdcard/Android/AnyHosts/user_rules`
+* Fill in the directory of the local hosts file in `/sdcard/Android/AnyHosts/local_hosts`
 
 ### • Fill in rules is one rule per line.
 
@@ -40,7 +40,13 @@ You can download the release installer zip file and install it via the Magisk Ma
 
 * Fill in the `IP`+`DomainName` please use `=` instead of space. (Block `127.0.0.1 www.google.com` please fill in the `127.0.0.1=www.google.com` )
 
-### • Fill in rules is each rule should separate by space or just one rule per line.
+### • Fill in rules is one rule per line.
+
+## user_rules
+
+* Fill your own rules in `/sdcard/Android/AnyHosts/user_rules`
+
+### • Fill in rules is one rule per line.
 
 ### select.ini
 
@@ -57,6 +63,18 @@ You can download the release installer zip file and install it via the Magisk Ma
 ## Uninstall
 
 * Uninstall the module via Magisk Manager App.
+
+## Execution order
+
+* The order of file executio is as follows
+```
+subscription hosts & local_hosts ---> black_list ---> user_rules
+```
+* Possible problems:
+
+1.If you fill in the black_list `127.0.0.1=www.google.com` and then fill in this entry in the user_rules, then there will be `127.0.0.1 www.google.com` in the final hosts file
+
+2.If you fill in the `DomainName` of the rule in the user_rules in the `subscription hosts & local_hosts`, then the relevant rules in the `subscription hosts & local_hosts` in the final hosts file will be deleted and the rules in the user_rules will be used
 
 ## Translation
 

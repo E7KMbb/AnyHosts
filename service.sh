@@ -17,7 +17,7 @@ until [ $(getprop sys.boot_completed) -eq 1 ] && [ -d "$work_dir" ]; do
   fi
 done
 
-sh $work_dir/select.ini
+. $work_dir/select.ini
 if [ $update_boot_start = "true" ]; then
    sh $MODDIR/script/functions.sh
 fi

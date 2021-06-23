@@ -5,12 +5,12 @@ script_dir=${0%/*}
 locale=$(getprop persist.sys.locale|awk -F "-" '{print $1"_"$NF}')
 [[ ${locale} == "" ]] && locale=$(settings get system system_locales|awk -F "," '{print $1}'|awk -F "-" '{print $1"_"$NF}')
 if [ -e $script_dir/${locale}.ini ];then
-   sh $script_dir/${locale}.ini
+   . $script_dir/${locale}.ini
 else
-   sh $script_dir/en_US.ini
+   . $script_dir/en_US.ini
 fi
 
-sh $work_dir/Cron.ini
+. $work_dir/Cron.ini
 
 [ -f /data/adb/magisk/busybox ] && alias crond="/data/adb/magisk/busybox crond"
 

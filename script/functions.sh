@@ -7,51 +7,60 @@ curdate="`date +%Y-%m-%d,%H:%M:%S`"
 # Local lang
 locale=$(getprop persist.sys.locale|awk -F "-" '{print $1"_"$NF}')
 [[ ${locale} == "" ]] && locale=$(settings get system system_locales|awk -F "," '{print $1}'|awk -F "-" '{print $1"_"$NF}')
-if [ -e $script_dir/${locale}.ini ];then
-   sh $script_dir/${locale}.ini
+if [ -e $script_dir/${locale}.ini ]; then
+   . $script_dir/${locale}.ini
 else
-   sh $script_dir/en_US.ini
+   . $script_dir/en_US.ini
 fi
 
 # Create work files
-if [ ! -d $work_dir ];then
+if [ ! -d $work_dir ]; then
    mkdir -p $work_dir
 fi
-if [ ! -e $work_dir/Cron.ini ];then
+if [ ! -e $work_dir/Cron.ini ]; then
    touch $work_dir/Cron.ini
    LANG_CRON
 fi
-if [ ! -e $work_dir/select.ini ];then
+if [ ! -e $work_dir/select.ini ]; then
    touch $work_dir/select.ini
    echo "# ${LANG_BOOT_START_UPDATE_SELECT}. true/false" >> $work_dir/select.ini
    echo "update_boot_start='false'" >> $work_dir/select.ini
    echo "# ${LANG_BOOT_START_REGULAR_UPDATE_SELECT}. true/false" >> $work_dir/select.ini
    echo "regular_update_boot_start='false'" >> $work_dir/select.ini
 fi
-if [ ! -e $work_dir/update.log ];then
+if [ ! -e $work_dir/update.log ]; then
    touch $work_dir/update.log
    echo "paceholder" >> $work_dir/update.log
    sed -i "G;G;G;G;G" $work_dir/update.log
    sed -i '1d' $work_dir/update.log
 fi
-if [ ! -e $work_dir/Regular_update.sh ];then
+if [ ! -e $work_dir/Regular_update.sh ]; then
    touch $work_dir/Regular_update.sh
    echo "${LANG_REGULAR_UPDATE}" >> $work_dir/Regular_update.sh
    echo "sh $script_dir/cron.sh" >> $work_dir/Regular_update.sh
 fi
-if [ ! -e $work_dir/Start.sh ];then
+if [ ! -e $work_dir/Start.sh ]; then
    touch $work_dir/Start.sh
    echo "${LANG_START}" >> $work_dir/Start.sh
    echo "sh $script_dir/functions.sh" >> $work_dir/Start.sh
 fi
-if [ ! -e $work_dir/hosts_link ];then
+if [ ! -e $work_dir/hosts_link ]; then
    touch $work_dir/hosts_link
 fi
-if [ ! -e $work_dir/user_rules ];then
+if [ ! -e $work_dir/local_hosts ]; then
+   touch $work_dir/local_hosts
+fi
+if [ ! -e $work_dir/user_rules ]; then
    touch $work_dir/user_rules
 fi
-if [ ! -e $work_dir/black_list ];then
+if [ ! -e $work_dir/black_list ]; then
    touch $work_dir/black_list
+fi
+
+# Check if the link exists
+if [ ! -s $work_dir/hosts_link ]; then
+   echo "${LANG_LINK_ERROR}"
+   exit 0
 fi
 
 # Check network connection
@@ -76,6 +85,7 @@ cycles=0
 hosts_link_text=$(cat $work_dir/hosts_link)
 if $(curl -V > /dev/null 2>&1) ; then
     for hosts_link in ${hosts_link_text[*]}; do
+       echo "${hosts_link}" | grep -q '^#' && continue
        cycles=$((${cycles} + 1))
        curl "${hosts_link}" -k -L -o "$work_dir/$cycles" >&2
        if [[ $? -gt 0 || ! -e $work_dir/$cycles ]]; then
@@ -87,6 +97,7 @@ if $(curl -V > /dev/null 2>&1) ; then
     done
 elif $(wget --help > /dev/null 2>&1) ; then
     for hosts_link in ${hosts_link_text[*]}; do
+       echo "${hosts_link}" | grep -q '^#' && continue
        cycles=$((${cycles} + 1))
        wget --no-check-certificate ${hosts_link} -O $work_dir/$cycles
        if [[ $? -gt 0 || ! -e $work_dir/$cycles ]]; then
@@ -103,18 +114,26 @@ else
 fi
 
 # Merge hosts
-for name in $(seq 1 $((${cycles} - 1))); do
-   cat $work_dir/$name $work_dir/$(($name + 1)) > $work_dir/paceholder
-   rm -rf $work_dir/$name
-   rm -rf $work_dir/$(($name + 1))
-   mv $work_dir/paceholder $work_dir/$(($name + 1))
-done
+if [ ${cycles} != "1" ]; then
+   for name in $(seq 1 $((${cycles} - 1))); do
+      cat $work_dir/$name $work_dir/$(($name + 1)) > $work_dir/paceholder
+      rm -rf $work_dir/$name
+      rm -rf $work_dir/$(($name + 1))
+      mv $work_dir/paceholder $work_dir/$(($name + 1))
+   done
+else
+   name=0
+fi
 
-# User rules
-if [ -s $work_dir/user_rules ];then
-   cat $work_dir/$(($name + 1)) $work_dir/user_rules > $work_dir/paceholder
-   rm -rf $work_dir/$(($name + 1))
-   mv $work_dir/paceholder $work_dir/$(($name + 1))
+# Local hosts
+if [ -s $work_dir/local_hosts ];then
+   local_hosts_text=$(cat $work_dir/local_hosts)
+   for local_hosts_dir in ${local_hosts_text[*]}; do
+      echo "${local_hosts_dir}" | grep -q '^#' && continue
+      cat ${local_hosts_dir} $work_dir/$(($name + 1)) > $work_dir/paceholder
+      rm -rf $work_dir/$(($name + 1))
+      mv $work_dir/paceholder $work_dir/$(($name + 1))
+   done
 fi
 
 # GitHub access acceleration hosts
@@ -161,13 +180,29 @@ rm -rf $work_dir/$(($name + 1))
 if [ -s $work_dir/black_list ];then
    black_list_text=$(cat $work_dir/black_list)
    for black_list in ${black_list_text[*]}; do
+     echo "${black_list}" | grep -q '^#' && continue
      if echo ${black_list} | grep -q "="; then
-       print1=$(echo "$black_list" | awk -F '=' '{print $1}')
-       print2=$(echo "$black_list" | awk -F '=' '{print $2}')
-       sed -i '/'$print1'[ ]'$print2'/d' $work_dir/hosts
+       black_list_print1=$(echo "$black_list" | awk -F '=' '{print $1}')
+       black_list_print2=$(echo "$black_list" | awk -F '=' '{print $2}')
+       sed -i '/'$black_list_print1'[ ]'$black_list_print2'/d' $work_dir/hosts
      else
        sed -i '/'$black_list'/d' $work_dir/hosts
      fi
+   done
+fi
+
+# User rules
+if [ -s $work_dir/user_rules ];then
+   user_rules_text=$(cat $work_dir/user_rules)
+   for user_rules in ${user_rules_text[*]}; do
+     echo "${user_rules}" | grep -q '^#' && continue
+     [[ `echo "${user_rules}" | grep -c "="` = '0' ]] && continue
+     user_rules_print1=$(echo "$black_list" | awk -F '=' '{print $1}')
+     user_rules_print2=$(echo "$black_list" | awk -F '=' '{print $2}')
+     if $(cat $work_dir/hosts | grep "$user_rules_print2"); then
+        sed -i '/ '$user_rules_print2'/d' $work_dir/hosts
+     fi
+     echo "$user_rules_print1 $user_rules_print2" $work_dir/hosts
    done
 fi
 

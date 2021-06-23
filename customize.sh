@@ -92,6 +92,8 @@ locale=$(getprop persist.sys.locale|awk -F "-" '{print $1"_"$NF}')
 if [ -e $MODPATH/script/${locale}.ini ];then
    . $MODPATH/script/${locale}.ini
 else
+   ui_print " Without your language file, the default language en_US will be used."
+   ui_print " If you need, you can go to the GitHub repository of this module for translation"
    . $MODPATH/script/en_US.ini
 fi
 
@@ -188,6 +190,9 @@ if [ ! -e $work_dir/Start.sh ];then
 fi
 if [ ! -e $work_dir/hosts_link ];then
    touch $work_dir/hosts_link
+fi
+if [ ! -e $work_dir/local_hosts ]; then
+   touch $work_dir/local_hosts
 fi
 if [ ! -e $work_dir/user_rules ];then
    touch $work_dir/user_rules
