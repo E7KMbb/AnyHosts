@@ -54,7 +54,7 @@
 
 * 在`/sdcard/Android/AnyHosts/select.ini`中修改参数控制开机自启更新和开机启用定时更新
 
-### 定时更新(默认关闭)
+## 定时更新(默认关闭)
 
 * 控制开启与关闭，将`Cron.ini`中的`regular_update`参数修改为`on/off`，然后执行`Regular_update.sh`便可切换工作状态
 

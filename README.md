@@ -56,7 +56,7 @@ You can download the release installer zip file and install it via the Magisk Ma
 
 * Modify the parameters in `/sdcard/Android/AnyHosts/select.ini` to control the boot-up update and start-up timing update
 
-### Timed update (default disallow)
+## Timed update (default disallow)
 
 * To control the opening and closing, modify the parameter of `regular_update` in `Cron.ini` to `on/off`, and then execute `Regular_update.sh` to switch the working state
 
