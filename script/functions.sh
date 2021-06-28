@@ -114,15 +114,24 @@ else
 fi
 
 # Merge hosts
-if [ ${cycles} != "1" ]; then
+if [[ ${cycles} = "0" || ${cycles} = "1" ]]; then
+   name=0
+   if [ ! -e $work_dir/1 ]; then
+      touch $work_dir/1
+   fi
+elif [ ${cycles} = "2" ]; then
+   name=1
+   cat $work_dir/$name $work_dir/$(($name + 1)) > $work_dir/paceholder
+   rm -rf $work_dir/$name
+   rm -rf $work_dir/$(($name + 1))
+   mv $work_dir/paceholder $work_dir/$(($name + 1))
+else
    for name in $(seq 1 $((${cycles} - 1))); do
       cat $work_dir/$name $work_dir/$(($name + 1)) > $work_dir/paceholder
       rm -rf $work_dir/$name
       rm -rf $work_dir/$(($name + 1))
       mv $work_dir/paceholder $work_dir/$(($name + 1))
    done
-else
-   name=0
 fi
 
 # Local hosts
