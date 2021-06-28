@@ -46,6 +46,8 @@ You can download the release installer zip file and install it via the Magisk Ma
 
 * Fill your own rules in `/sdcard/Android/AnyHosts/user_rules`
 
+* Please use `=` instead of spaces
+
 ### • Fill in rules is one rule per line.
 
 ### select.ini
