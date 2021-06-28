@@ -50,7 +50,7 @@ You can download the release installer zip file and install it via the Magisk Ma
 
 ### • Fill in rules is one rule per line.
 
-### select.ini
+## select.ini
 
 * Parameters selected during installation
 
