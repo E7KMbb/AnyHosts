@@ -64,7 +64,7 @@ if [ ! -s $work_dir/hosts_link ]; then
 fi
 
 # Check network connection
-for i in $(seq 1 100); do
+for test_number in $(seq 1 100); do
    if [[ $(ping -c 1 1.2.4.8) ]] >/dev/null 2>&1; then
    break;
    elif [[ $(ping -c 1 8.8.8.8) ]] >/dev/null 2>&1; then
@@ -72,7 +72,7 @@ for i in $(seq 1 100); do
    elif [[ $(ping -c 1 114.114.114.114) ]] >/dev/null 2>&1; then
    break;
    fi
-   if [ $i = 100 ]; then
+   if [ $test_number = 100 ]; then
       echo "${LANG_NETWORK_ERROR}"
 	  echo "${LANG_NETWORK_ERROR}" >> $work_dir/update.log
 	  exit 0
@@ -86,6 +86,7 @@ hosts_link_text=$(cat $work_dir/hosts_link)
 if $(curl -V > /dev/null 2>&1) ; then
     for hosts_link in ${hosts_link_text[*]}; do
        echo "${hosts_link}" | grep -q '^#' && continue
+       [[ `echo "${hosts_link}" | grep -c "^http"` = '0' ]] && continue
        cycles=$((${cycles} + 1))
        curl "${hosts_link}" -k -L -o "$work_dir/$cycles" >&2
        if [[ $? -gt 0 || ! -e $work_dir/$cycles ]]; then
@@ -98,6 +99,7 @@ if $(curl -V > /dev/null 2>&1) ; then
 elif $(wget --help > /dev/null 2>&1) ; then
     for hosts_link in ${hosts_link_text[*]}; do
        echo "${hosts_link}" | grep -q '^#' && continue
+       [[ `echo "${hosts_link}" | grep -c "^http"` = '0' ]] && continue
        cycles=$((${cycles} + 1))
        wget --no-check-certificate ${hosts_link} -O $work_dir/$cycles
        if [[ $? -gt 0 || ! -e $work_dir/$cycles ]]; then
@@ -171,13 +173,13 @@ sed -i '/^#/d' $work_dir/$(($name + 1))
 sed -i '/^</d' $work_dir/$(($name + 1))
 sed -i '/^>/d' $work_dir/$(($name + 1))
 sed -i '/^|/d' $work_dir/$(($name + 1))
-sed -i '/^@/d' $work_dir/$(($name + 1))
-sed -i '/^./d' $work_dir/$(($name + 1))
 sed -i '/^-/d' $work_dir/$(($name + 1))
-sed -i '/^!/d' $work_dir/$(($name + 1))
-sed -i '/^$/d' $work_dir/$(($name + 1))
+sed -i '/^\./d' $work_dir/$(($name + 1))
+sed -i '/^\!/d' $work_dir/$(($name + 1))
+sed -i '/^\@/d' $work_dir/$(($name + 1))
+sed -i '/^\$/d' $work_dir/$(($name + 1))
 sed -i '/^\[/d' $work_dir/$(($name + 1))
-sed -i '/^~/d' $work_dir/$(($name + 1))
+sed -i '/^\~/d' $work_dir/$(($name + 1))
 sed -i '/localhost/d' $work_dir/$(($name + 1))
 sed -i '/ip6-localhost/d' $work_dir/$(($name + 1))
 sed -i '/ip6-loopback/d' $work_dir/$(($name + 1))
