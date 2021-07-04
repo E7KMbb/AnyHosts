@@ -213,7 +213,7 @@ if [ -s $work_dir/user_rules ];then
      if $(cat $work_dir/hosts | grep "$user_rules_print2"); then
         sed -i '/ '$user_rules_print2'/d' $work_dir/hosts
      fi
-     echo "$user_rules_print1 $user_rules_print2" $work_dir/hosts
+     echo "$user_rules_print1 $user_rules_print2" >> $work_dir/hosts
    done
 fi
 
