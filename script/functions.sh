@@ -208,8 +208,8 @@ if [ -s $work_dir/user_rules ];then
    for user_rules in ${user_rules_text[*]}; do
      echo "${user_rules}" | grep -q '^#' && continue
      [[ `echo "${user_rules}" | grep -c "="` = '0' ]] && continue
-     user_rules_print1=$(echo "$black_list" | awk -F '=' '{print $1}')
-     user_rules_print2=$(echo "$black_list" | awk -F '=' '{print $2}')
+     user_rules_print1=$(echo "${user_rules}" | awk -F '=' '{print $1}')
+     user_rules_print2=$(echo "${user_rules}" | awk -F '=' '{print $2}')
      if $(cat $work_dir/hosts | grep "$user_rules_print2"); then
         sed -i '/ '$user_rules_print2'/d' $work_dir/hosts
      fi
