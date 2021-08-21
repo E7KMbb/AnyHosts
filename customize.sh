@@ -97,6 +97,8 @@ else
    . $MODPATH/script/en_US.ini
 fi
 
+ui_print "${LANG_WARNING}"
+
 sed -i 's/<DESCRIPTION>/'"${LANG_DESCRIPTION}"'/g' $MODPATH/module.prop
 
 # External Tools
@@ -158,9 +160,12 @@ work_dir=/sdcard/Android/AnyHosts
 if [ ! -d $work_dir ];then
    mkdir -p $work_dir
 fi
+if (grep "* * * * *" $work_dir/Cron.ini); then
+   rm -rf $work_dir/Cron.ini
+fi
 if [ ! -e $work_dir/Cron.ini ];then
    touch $work_dir/Cron.ini
-   LANG_CRON
+   ${LANG_CRON}
 fi
 rm -rf $work_dir/select.ini
 if [ ! -e $work_dir/select.ini ];then
