@@ -19,7 +19,7 @@ if [ ! -d $work_dir ]; then
 fi
 if [ ! -e $work_dir/Cron.ini ]; then
    touch $work_dir/Cron.ini
-   LANG_CRON
+   ${LANG_CRON}
 fi
 if [ ! -e $work_dir/select.ini ]; then
    touch $work_dir/select.ini
@@ -84,6 +84,7 @@ done
 cycles=0
 hosts_link_text=$(cat $work_dir/hosts_link)
 if $(curl -V > /dev/null 2>&1) ; then
+    download_command="c"
     for hosts_link in ${hosts_link_text[*]}; do
        echo "${hosts_link}" | grep -q '^#' && continue
        [[ `echo "${hosts_link}" | grep -c "^http"` = '0' ]] && continue
@@ -97,6 +98,7 @@ if $(curl -V > /dev/null 2>&1) ; then
        fi
     done
 elif $(wget --help > /dev/null 2>&1) ; then
+    download_command="w"
     for hosts_link in ${hosts_link_text[*]}; do
        echo "${hosts_link}" | grep -q '^#' && continue
        [[ `echo "${hosts_link}" | grep -c "^http"` = '0' ]] && continue
@@ -148,21 +150,42 @@ if [ -s $work_dir/local_hosts ];then
 fi
 
 # GitHub access acceleration hosts
-GitHub_IP=$(curl --user-agent "Mozilla/5.0 (Linux; Android 7.1.1; Mi Note 3 Build/NMF26X; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/61.0.3163.98 Mobile Safari/537.36" -skL "https://github.com.ipaddress.com/" | egrep -o '<li>[0-9.]{11,}</li>' | egrep -o -m 1 '[0-9.]{11,}')
-GitHub_IP2=$(curl --user-agent "Mozilla/5.0 (Linux; Android 7.1.1; Mi Note 3 Build/NMF26X; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/61.0.3163.98 Mobile Safari/537.36" -skL "https://fastly.net.ipaddress.com/github.global.ssl.fastly.net" | egrep -o '<li>[0-9.]{11,}</li>' | egrep -o -m 1 '[0-9.]{11,}')
-GitHub_IP3=$(curl --user-agent "Mozilla/5.0 (Linux; Android 7.1.1; Mi Note 3 Build/NMF26X; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/61.0.3163.98 Mobile Safari/537.36" -skL "https://github.com.ipaddress.com/assets-cdn.github.com" | egrep -o '<li>[0-9.]{11,}</li>' | egrep -o -m 1 '[0-9.]{11,}')
-if [ ! -z "${GitHub_IP}" ]; then
-   if ( ! grep " github.com" $work_dir/$(($name + 1))); then
-      echo "${GitHub_IP} github.com" >> $work_dir/$(($name + 1))
+model="$(getprop ro.product.model)"
+version=$(echo $(($(($RANDOM%3))+9)))
+ua="Mozilla/5.0 (Linux; Android ${version}; ${model}) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.115 Mobile Safari/537.36"
+if ( ! grep " www.github.com" $work_dir/$(($name + 1))); then
+   if [ ${download_command} = "c" ]; then
+      GitHub_IP="$(curl --user-agent "${ua}" -skL "https://github.com.ipaddress.com/" | egrep -o '<li>[0-9.]{11,}</li>' | egrep -o -m 1 '[0-9.]{11,}')"
+   else
+      wget -U "${ua}" --no-check-certificate -O $script_dir/ip1 https://github.com.ipaddress.com/
+      GitHub_IP=$(cat $script_dir/ip1 | egrep -o '<li>[0-9.]{11,}</li>' | egrep -o -m 1 '[0-9.]{11,}')
+      rm -rf $script_dir/ip1
+   fi
+   if [ ! -z "${GitHub_IP}" ]; then
+      echo "${GitHub_IP} www.github.com" >> $work_dir/$(($name + 1))
    fi
 fi
-if [ ! -z "${GitHub_IP2}" ]; then
-   if ( ! grep " github.global.ssl.fastly.net" $work_dir/$(($name + 1))); then
+if ( ! grep " github.global.ssl.fastly.net" $work_dir/$(($name + 1))); then
+   if [ ${download_command} = "c" ]; then
+      GitHub_IP2="$(curl --user-agent "${ua}" -skL "https://fastly.net.ipaddress.com/github.global.ssl.fastly.net" | egrep -o '<li>[0-9.]{11,}</li>' | egrep -o -m 1 '[0-9.]{11,}')"
+   else
+      wget -U "${ua}" --no-check-certificate -O $script_dir/ip2 https://fastly.net.ipaddress.com/github.global.ssl.fastly.net
+      GitHub_IP2=$(cat $script_dir/ip2 | egrep -o '<li>[0-9.]{11,}</li>' | egrep -o -m 1 '[0-9.]{11,}')
+      rm -rf $script_dir/ip2
+   fi
+   if [ ! -z "${GitHub_IP2}" ]; then   
       echo "${GitHub_IP2} github.global.ssl.fastly.net" >> $work_dir/$(($name + 1))
    fi
 fi
-if [ ! -z "${GitHub_IP3}" ]; then
-   if ( ! grep " assets-cdn.github.com" $work_dir/$(($name + 1))); then
+if ( ! grep " assets-cdn.github.com" $work_dir/$(($name + 1))); then
+   if [ ${download_command} = "c" ]; then
+      GitHub_IP3="$(curl --user-agent "${ua}" -skL "https://github.com.ipaddress.com/assets-cdn.github.com" | egrep -o '<li>[0-9.]{11,}</li>' | egrep -o -m 1 '[0-9.]{11,}')"
+   else
+      wget -U "${ua}" --no-check-certificate -O $script_dir/ip3 https://github.com.ipaddress.com/assets-cdn.github.com
+      GitHub_IP2=$(cat $script_dir/ip3 | egrep -o '<li>[0-9.]{11,}</li>' | egrep -o -m 1 '[0-9.]{11,}')
+      rm -rf $script_dir/ip3
+   fi
+   if [ ! -z "${GitHub_IP3}" ]; then
       echo "${GitHub_IP3} assets-cdn.github.com" >> $work_dir/$(($name + 1))
    fi
 fi

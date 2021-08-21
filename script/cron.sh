@@ -19,9 +19,68 @@ if [ $regular_update = "on" ]; then
    for pid in ${pid_text[*]}; do
       kill -9 $pid &> /dev/null
    done
+   if [[ $time_format = "24" || $time_format = "AM" ]]; then
+      H="$(echo $time | awk -F ':' '{print $1}')"
+      M="$(echo $time | awk -F ':' '{print $2}')"
+      if [ $H = "24" ]; then
+         export H="0"
+      fi
+      if [ $M = "00" ]; then
+         export M="0"
+      elif [ $M = "60" ]; then
+           H=$(($H + 1))
+           export M="0"
+      elif $(echo "$M" | grep -q '^0'); then
+         export M="$(echo $time | awk -F ':' '{print $2}' | awk -F '0' '{print $2}')"
+      fi
+      if [[ $H -gt "23" || $M -gt "59" ]]; then
+         echo "${LANG_CRON_ERROR_TIME}"
+         exit 1
+      fi
+   elif [ $time_format = "PM" ]; then
+      H="$(($(echo $time | awk -F ':' '{print $1}') + 12))"
+      M="$(echo $time | awk -F ':' '{print $2}')"
+      if $(echo "$H" | grep -q '^0'); then
+         export H="$(echo $time | awk -F ':' '{print $1}' | awk -F '0' '{print $2}')"
+      fi
+      if [ $M = "00" ]; then
+         export M="0"
+      elif [ $M = "60" ]; then
+         H=$(($H + 1))
+         export M="0"
+      elif $(echo "$M" | grep -q '^0'); then
+         export M="$(echo $time | awk -F ':' '{print $2}' | awk -F '0' '{print $2}')"
+      fi
+      if [[ $H -gt "23" || $M -gt "59" ]]; then
+         echo "${LANG_CRON_ERROR_TIME}"
+         exit 1
+      fi
+   fi
+   if [ $wupdate = "y" ]; then
+      if [ $mupdate = "y" ]; then
+         echo "${LANG_CRON_ERROR_WAM}"
+         exit 1
+      fi
+      DOW="$wday"
+   elif [ $wupdate = "n" ]; then
+      DOW="*"
+   else
+      echo "${LANG_CRON_ERROR}:$wupdate"
+      echo "${LANG_CRON_ERROR3}"
+      exit 1
+   fi
+   if [ $mupdate = "y" ]; then
+      DOM="$wdate"
+   elif [ $mupdate = "n" ]; then
+      DOM="*"
+   else
+      echo "${LANG_CRON_ERROR}:$mupdate"
+      echo "${LANG_CRON_ERROR3}"
+      exit 1
+   fi
    rm -rf $script_dir/crontabs/root
    touch $script_dir/crontabs/root
-   echo "$M $H $DOM $MO $DOW  sh $script_dir/functions.sh" >> $script_dir/crontabs/root
+   echo "$M $H $DOM * $DOW  sh $script_dir/functions.sh" >> $script_dir/crontabs/root
    chmod 777 $script_dir/crontabs/root
    crond -b -c $script_dir/crontabs
    echo "${LANG_CRON_ON}"
