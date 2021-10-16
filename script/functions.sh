@@ -125,16 +125,16 @@ if [[ ${cycles} = "0" || ${cycles} = "1" ]]; then
    fi
 elif [ ${cycles} = "2" ]; then
    name=1
-   cat $work_dir/$name $work_dir/$(($name + 1)) > $work_dir/paceholder
+   cat $work_dir/$name $work_dir/$(($name+1)) > $work_dir/paceholder
    rm -rf $work_dir/$name
-   rm -rf $work_dir/$(($name + 1))
-   mv $work_dir/paceholder $work_dir/$(($name + 1))
+   rm -rf $work_dir/$(($name+1))
+   mv $work_dir/paceholder $work_dir/$(($name+1))
 else
    for name in $(seq 1 $((${cycles} - 1))); do
-      cat $work_dir/$name $work_dir/$(($name + 1)) > $work_dir/paceholder
+      cat $work_dir/$name $work_dir/$(($name+1)) > $work_dir/paceholder
       rm -rf $work_dir/$name
-      rm -rf $work_dir/$(($name + 1))
-      mv $work_dir/paceholder $work_dir/$(($name + 1))
+      rm -rf $work_dir/$(($name+1))
+      mv $work_dir/paceholder $work_dir/$(($name+1))
    done
 fi
 
@@ -143,72 +143,53 @@ if [ -s $work_dir/local_hosts ];then
    local_hosts_text=$(cat $work_dir/local_hosts)
    for local_hosts_dir in ${local_hosts_text[*]}; do
       echo "${local_hosts_dir}" | grep -q '^#' && continue
-      cat ${local_hosts_dir} $work_dir/$(($name + 1)) > $work_dir/paceholder
-      rm -rf $work_dir/$(($name + 1))
-      mv $work_dir/paceholder $work_dir/$(($name + 1))
+      cat ${local_hosts_dir} $work_dir/$(($name+1)) > $work_dir/paceholder
+      rm -rf $work_dir/$(($name+1))
+      mv $work_dir/paceholder $work_dir/$(($name+1))
    done
 fi
 
 # GitHub access acceleration hosts
+GitHub_access_acceleration() {
+   if ( ! grep " $3" "$work_dir/$(($name+1))") ; then
+      if [ "${download_command}" = "c" ]; then
+         GitHub_IP="$(curl --user-agent "${ua}" -skL "$2" | egrep -o '<li>[0-9.]{11,}</li>' | egrep -o -m 1 '[0-9.]{11,}')"
+      else
+         wget -U "${ua}" --no-check-certificate -O $script_dir/$1 $2
+         GitHub_IP=$(cat $script_dir/$1 | egrep -o '<li>[0-9.]{11,}</li>' | egrep -o -m 1 '[0-9.]{11,}')
+         rm -rf $script_dir/$1
+      fi
+      if [ ! -z "${GitHub_IP}" ]; then
+         echo "${GitHub_IP} $3" >> $work_dir/$(($name+1))
+      fi
+   fi
+}
 model="$(getprop ro.product.model)"
 version=$(echo $(($(($RANDOM%3))+9)))
 ua="Mozilla/5.0 (Linux; Android ${version}; ${model}) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.115 Mobile Safari/537.36"
-if ( ! grep " www.github.com" $work_dir/$(($name + 1))); then
-   if [ ${download_command} = "c" ]; then
-      GitHub_IP="$(curl --user-agent "${ua}" -skL "https://github.com.ipaddress.com/" | egrep -o '<li>[0-9.]{11,}</li>' | egrep -o -m 1 '[0-9.]{11,}')"
-   else
-      wget -U "${ua}" --no-check-certificate -O $script_dir/ip1 https://github.com.ipaddress.com/
-      GitHub_IP=$(cat $script_dir/ip1 | egrep -o '<li>[0-9.]{11,}</li>' | egrep -o -m 1 '[0-9.]{11,}')
-      rm -rf $script_dir/ip1
-   fi
-   if [ ! -z "${GitHub_IP}" ]; then
-      echo "${GitHub_IP} www.github.com" >> $work_dir/$(($name + 1))
-   fi
-fi
-if ( ! grep " github.global.ssl.fastly.net" $work_dir/$(($name + 1))); then
-   if [ ${download_command} = "c" ]; then
-      GitHub_IP2="$(curl --user-agent "${ua}" -skL "https://fastly.net.ipaddress.com/github.global.ssl.fastly.net" | egrep -o '<li>[0-9.]{11,}</li>' | egrep -o -m 1 '[0-9.]{11,}')"
-   else
-      wget -U "${ua}" --no-check-certificate -O $script_dir/ip2 https://fastly.net.ipaddress.com/github.global.ssl.fastly.net
-      GitHub_IP2=$(cat $script_dir/ip2 | egrep -o '<li>[0-9.]{11,}</li>' | egrep -o -m 1 '[0-9.]{11,}')
-      rm -rf $script_dir/ip2
-   fi
-   if [ ! -z "${GitHub_IP2}" ]; then   
-      echo "${GitHub_IP2} github.global.ssl.fastly.net" >> $work_dir/$(($name + 1))
-   fi
-fi
-if ( ! grep " assets-cdn.github.com" $work_dir/$(($name + 1))); then
-   if [ ${download_command} = "c" ]; then
-      GitHub_IP3="$(curl --user-agent "${ua}" -skL "https://github.com.ipaddress.com/assets-cdn.github.com" | egrep -o '<li>[0-9.]{11,}</li>' | egrep -o -m 1 '[0-9.]{11,}')"
-   else
-      wget -U "${ua}" --no-check-certificate -O $script_dir/ip3 https://github.com.ipaddress.com/assets-cdn.github.com
-      GitHub_IP2=$(cat $script_dir/ip3 | egrep -o '<li>[0-9.]{11,}</li>' | egrep -o -m 1 '[0-9.]{11,}')
-      rm -rf $script_dir/ip3
-   fi
-   if [ ! -z "${GitHub_IP3}" ]; then
-      echo "${GitHub_IP3} assets-cdn.github.com" >> $work_dir/$(($name + 1))
-   fi
-fi
+GitHub_access_acceleration "ip1" "https://github.com.ipaddress.com/" "www.github.com"
+GitHub_access_acceleration "ip2" "https://fastly.net.ipaddress.com/github.global.ssl.fastly.net" "github.global.ssl.fastly.net"
+GitHub_access_acceleration "ip3" "https://github.com.ipaddress.com/assets-cdn.github.com" "assets-cdn.github.com"
 
 # Remove duplicates
-sed -i '/^ /d' $work_dir/$(($name + 1))
-sed -i '/^#/d' $work_dir/$(($name + 1))
-sed -i '/^</d' $work_dir/$(($name + 1))
-sed -i '/^>/d' $work_dir/$(($name + 1))
-sed -i '/^|/d' $work_dir/$(($name + 1))
-sed -i '/^-/d' $work_dir/$(($name + 1))
-sed -i '/^\./d' $work_dir/$(($name + 1))
-sed -i '/^\!/d' $work_dir/$(($name + 1))
-sed -i '/^\@/d' $work_dir/$(($name + 1))
-sed -i '/^\$/d' $work_dir/$(($name + 1))
-sed -i '/^\[/d' $work_dir/$(($name + 1))
-sed -i '/^\~/d' $work_dir/$(($name + 1))
-sed -i '/localhost/d' $work_dir/$(($name + 1))
-sed -i '/ip6-localhost/d' $work_dir/$(($name + 1))
-sed -i '/ip6-loopback/d' $work_dir/$(($name + 1))
-sed -i "s/0.0.0.0 /127.0.0.1 /g" $work_dir/$(($name + 1))
-cat $work_dir/$(($name + 1)) |sort|uniq > $work_dir/hosts
-rm -rf $work_dir/$(($name + 1))
+sed -i '/^ /d' $work_dir/$(($name+1))
+sed -i '/^#/d' $work_dir/$(($name+1))
+sed -i '/^</d' $work_dir/$(($name+1))
+sed -i '/^>/d' $work_dir/$(($name+1))
+sed -i '/^|/d' $work_dir/$(($name+1))
+sed -i '/^-/d' $work_dir/$(($name+1))
+sed -i '/^\./d' $work_dir/$(($name+1))
+sed -i '/^\!/d' $work_dir/$(($name+1))
+sed -i '/^\@/d' $work_dir/$(($name+1))
+sed -i '/^\$/d' $work_dir/$(($name+1))
+sed -i '/^\[/d' $work_dir/$(($name+1))
+sed -i '/^\~/d' $work_dir/$(($name+1))
+sed -i '/localhost/d' $work_dir/$(($name+1))
+sed -i '/ip6-localhost/d' $work_dir/$(($name+1))
+sed -i '/ip6-loopback/d' $work_dir/$(($name+1))
+sed -i "s/0.0.0.0 /127.0.0.1 /g" $work_dir/$(($name+1))
+cat $work_dir/$(($name+1)) |sort|uniq > $work_dir/hosts
+rm -rf $work_dir/$(($name+1))
 
 # Black list
 if [ -s $work_dir/black_list ];then
@@ -233,8 +214,8 @@ if [ -s $work_dir/user_rules ];then
      [[ `echo "${user_rules}" | grep -c "="` = '0' ]] && continue
      user_rules_print1=$(echo "${user_rules}" | awk -F '=' '{print $1}')
      user_rules_print2=$(echo "${user_rules}" | awk -F '=' '{print $2}')
-     if $(cat $work_dir/hosts | grep "$user_rules_print2"); then
-        sed -i '/ '$user_rules_print2'/d' $work_dir/hosts
+     if [[ ! -z "$(cat $work_dir/hosts | grep "$user_rules_print2")" ]]; then
+        sed -i '/ $user_rules_print2/d' $work_dir/hosts
      fi
      echo "$user_rules_print1 $user_rules_print2" >> $work_dir/hosts
    done
@@ -254,7 +235,7 @@ sed -i '10 i ::1 ip6-loopback' $work_dir/hosts
 
 # Check for updates
 Now=$(md5sum $hosts_dir/hosts | awk '{print $1}')
-New=$(md5sum  $work_dir/hosts | awk '{print $1}')
+New=$(md5sum $work_dir/hosts | awk '{print $1}')
 if [ $Now = $New ]; then
    rm -rf $work_dir/hosts
    echo "${LANG_NOT_UPDATE}"

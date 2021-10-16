@@ -80,7 +80,7 @@ if [ $regular_update = "on" ]; then
    fi
    rm -rf $script_dir/crontabs/root
    touch $script_dir/crontabs/root
-   echo "$M $H $DOM * $DOW  sh $script_dir/functions.sh" >> $script_dir/crontabs/root
+   echo "$M $H $DOM * $DOW  /system/bin/sh $script_dir/functions.sh" >> $script_dir/crontabs/root
    chmod 777 $script_dir/crontabs/root
    crond -b -c $script_dir/crontabs
    echo "${LANG_CRON_ON}"
