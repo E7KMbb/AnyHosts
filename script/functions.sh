@@ -3,6 +3,9 @@ hosts_dir=/data/adb/modules/hosts/system/etc
 work_dir=/sdcard/Android/AnyHosts
 script_dir=${0%/*}
 curdate="`date +%Y-%m-%d,%H:%M:%S`"
+model="$(getprop ro.product.model)"
+version=$(echo $(($(($RANDOM%3))+9)))
+ua="Mozilla/5.0 (Linux; Android ${version}; ${model}) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Mobile Safari/537.36"
 
 # Local lang
 locale=$(getprop persist.sys.locale|awk -F "-" '{print $1"_"$NF}')
@@ -89,7 +92,7 @@ if $(curl -V > /dev/null 2>&1) ; then
        echo "${hosts_link}" | grep -q '^#' && continue
        [[ `echo "${hosts_link}" | grep -c "^http"` = '0' ]] && continue
        cycles=$((${cycles} + 1))
-       curl "${hosts_link}" -k -L -o "$work_dir/$cycles" >&2
+       curl --user-agent "${ua}" "${hosts_link}" -k -L -o "$work_dir/$cycles" >&2
        if [[ $? -gt 0 || ! -e $work_dir/$cycles ]]; then
           rm -rf $work_dir/$cycles
           touch $work_dir/$cycles
@@ -103,7 +106,7 @@ elif $(wget --help > /dev/null 2>&1) ; then
        echo "${hosts_link}" | grep -q '^#' && continue
        [[ `echo "${hosts_link}" | grep -c "^http"` = '0' ]] && continue
        cycles=$((${cycles} + 1))
-       wget --no-check-certificate ${hosts_link} -O $work_dir/$cycles
+       wget -U "${ua}" --no-check-certificate ${hosts_link} -O $work_dir/$cycles
        if [[ $? -gt 0 || ! -e $work_dir/$cycles ]]; then
           rm -rf $work_dir/$cycles
           touch $work_dir/$cycles
@@ -164,9 +167,6 @@ GitHub_access_acceleration() {
       fi
    fi
 }
-model="$(getprop ro.product.model)"
-version=$(echo $(($(($RANDOM%3))+9)))
-ua="Mozilla/5.0 (Linux; Android ${version}; ${model}) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.115 Mobile Safari/537.36"
 GitHub_access_acceleration "ip1" "https://github.com.ipaddress.com/" "www.github.com"
 GitHub_access_acceleration "ip2" "https://fastly.net.ipaddress.com/github.global.ssl.fastly.net" "github.global.ssl.fastly.net"
 GitHub_access_acceleration "ip3" "https://github.com.ipaddress.com/assets-cdn.github.com" "assets-cdn.github.com"
@@ -215,7 +215,7 @@ if [ -s $work_dir/user_rules ];then
      user_rules_print1=$(echo "${user_rules}" | awk -F '=' '{print $1}')
      user_rules_print2=$(echo "${user_rules}" | awk -F '=' '{print $2}')
      if [[ ! -z "$(cat $work_dir/hosts | grep "$user_rules_print2")" ]]; then
-        sed -i '/ $user_rules_print2/d' $work_dir/hosts
+        sed -i '/ '$user_rules_print2'/d' $work_dir/hosts
      fi
      echo "$user_rules_print1 $user_rules_print2" >> $work_dir/hosts
    done
